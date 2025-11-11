@@ -185,7 +185,7 @@
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       alert("✅ Logged in successfully as " + userCredential.user.email);
-      window.location.href = "home.html"; // redirect after login
+      window.location.href = "index.html"; // redirect after login
     } catch (error) {
       alert("⚠️ " + error.message);
     }
