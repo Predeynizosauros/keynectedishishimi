@@ -129,6 +129,12 @@
         <input type="password" id="signupPassword" placeholder="Password" required />
         <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
         <button type="submit">Create Account</button>
+        <button id="googleLogin" type="button" style="margin-top: 10px; background: #fff; color: #555; border: 1px solid #ddd;">
+  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
+       alt="Google Logo" style="width:20px; vertical-align:middle; margin-right:8px;">
+  Continue with Google
+</button>
+
       </form>
 
       <button id="googleSignUp" class="google-btn">Sign up with Google</button>
@@ -137,58 +143,72 @@
       <a href="index.html" class="back-home">← Back to Home</a>
     </div>
   </main>
+  
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+<script type="module">
+  // Import Firebase SDKs
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
+  // Your Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyC-ExpJfS0Gc-WEy7_6_pIz2g_WsyVsQDA",
+    authDomain: "keynected-store.firebaseapp.com",
+    projectId: "keynected-store",
+    storageBucket: "keynected-store.firebasestorage.app",
+    messagingSenderId: "1008100804573",
+    appId: "1:1008100804573:web:c2e87fa8f8f28fadedd834",
+    measurementId: "G-R17C0EMD2D"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
 
-    // Email/Password Signup
-    const signupForm = document.getElementById("signupForm");
-    signupForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("signupEmail").value;
-      const password = document.getElementById("signupPassword").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
+  // SIGN UP
+  const signupForm = document.getElementById("signupForm");
+  signupForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      alert("✅ Signup successful! Welcome, " + userCredential.user.email);
+      window.location.href = "login.html";
+    } catch (error) {
+      alert("⚠️ " + error.message);
+    }
+  });
 
-      if(password !== confirmPassword){
-        alert("Passwords do not match");
-        return;
-      }
+  // LOGIN
+  const loginForm = document.getElementById("loginForm");
+  loginForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      alert("✅ Logged in successfully as " + userCredential.user.email);
+      window.location.href = "home.html"; // redirect after login
+    } catch (error) {
+      alert("⚠️ " + error.message);
+    }
+  });
 
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        alert(`Account created for ${name} (${userCredential.user.email})`);
-        signupForm.reset();
-      } catch (error) {
-        alert(error.message);
-      }
-    });
+  // GOOGLE LOGIN
+  const googleBtn = document.getElementById("googleLogin");
+  googleBtn?.addEventListener("click", async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      alert("✅ Logged in with Google as " + result.user.email);
+      window.location.href = "home.html";
+    } catch (error) {
+      alert("⚠️ " + error.message);
+    }
+  });
+</script>
 
-    // Google Signup
-    document.getElementById("googleSignUp").addEventListener("click", async () => {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        alert(`Signed up as ${user.email} (Google)`);
-      } catch (error) {
-        alert(error.message);
-      }
-    });
-  </script>
 
 </body>
 </html>
