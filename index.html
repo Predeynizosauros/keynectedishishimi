@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Keynected | Stay Connected</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* ✅ Quick fix for hero visibility */
+    .image-gallery {
+      position: relative;
+      width: 250px;
+      height: 200px;
+      overflow: hidden;
+    }
+    .image-gallery img {
+      display: none;
+      position: center;
+      top: 0; left: 0;
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      transition: opacity 0.8s ease;
+      opacity: 0;
+    }
+    .image-gallery img.active {
+      display: block;
+      opacity: 1;
+      z-index: 1;
+    }
+    .hero-controls button {
+      background: rgba(255,255,255,0.7);
+      border: none;
+      cursor: pointer;
+      font-size: 1.8rem;
+      padding: 8px 16px;
+      border-radius: 6px;
+      pointer-events: all;
+    }
+    .carousel-indicators .dot.active { background-color: #111; }
+  </style>
+</head>
+<body>
+  <!-- Logo Header -->
+  <header class="logo-header">
+    <img src="images/Keynected.png" alt="Keynected logo" />
+  </header>
+
+  <!-- Main Header with top cart -->
+  <header class="main-header">
+      <div class="navbar">
+  <div class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('show')">☰</div>
+  <nav class="nav-links">
+    <a href="index.html"class="active">HOME</a>
+    <a href="products.html">PRODUCTS</a>
+    <a href="review.html">REVIEWS</a>
+    <a href="about.html" >ABOUT</a>
+    <a href="contact.html">CONTACT</a>
+  </nav>
+
+  <div class="nav-right">
+    <button id="topCartBtn" class="icon-btn" aria-label="Open cart">
+      🛒 <span class="cart-badge" id="topCartCount">0</span>
+    </button>
+    <a href="login.html" class="login-btn">Login / Signup</a>
+  </div>
+</div>
+
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero-gallery hero" aria-label="Hero">
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <div class="text-content fade-in">
+          <h1 id="animatedSlogan">Stay Connected, Stay Keynected</h1>
+          <p class="tagline">A heartbeat away — wherever you are.</p>
+          <p class="hero-sub">The meaningful keychain that connects you with someone special — near or far.</p>
+          <div class="hero-ctas">
+            <button class="shop-btn" id="heroShopBtn">Shop Now</button>
+            <a href="products.html" class="secondary-cta">Visit Shop</a>
+          </div>
+        </div>
+
+        <div class="image-gallery" id="heroGallery">
+          <img src="images/img7.jpg" alt="Rose gold heart keychain" class="active">
+          <img src="images/img4.jpg" alt="Silver engraved keychain">
+          <img src="images/img3.jpg" alt="Leather personalized keychain">
+          <img src="images/img1.jpg" alt="Minimal circle keychain">
+          <img src="images/img2.jpg" alt="Colorful enamel keychain">
+          <img src="images/img5.jpg" alt="Custom name keychain">
+          <img src="images/img6.jpg" alt="Cute charm keychain">
+        </div>
+      </div>
+
+      <div class="hero-controls">
+        <button class="prev-hero" aria-label="Previous image">❮</button>
+        <button class="next-hero" aria-label="Next image">❯</button>
+      </div>
+
+      <div class="carousel-indicators" id="heroDots"></div>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <section id="featured-products" class="products fade-in">
+    <h1>Featured — Our Favorites</h1>
+    <p>Handpicked keychains our customers love. Quick add or view details.</p>
+    <div class="product-grid" id="homeProductGrid">
+      <article class="product-card" data-id="h-p1" data-price="499">
+        <img src="images/keychain1.jpg" alt="Rose Gold Heart Keychain">
+        <h3 class="product-name">Rose Gold Heart</h3>
+        <div class="price">₱499</div>
+        <div class="options">
+          <label>Color
+            <select class="opt-color">
+              <option>Rose Gold</option><option>Gold</option><option>Silver</option>
+            </select>
+          </label>
+          <label>Qty
+            <input class="opt-qty" type="number" min="1" value="1" />
+          </label>
+        </div>
+        <div class="product-actions">
+          <button class="quick-view">Quick View</button>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </article>
+
+      <article class="product-card" data-id="h-p2" data-price="549">
+        <img src="images/keychain2.jpg" alt="Silver Engraved Keychain">
+        <h3 class="product-name">Silver Engraved</h3>
+        <div class="price">₱549</div>
+        <div class="options">
+          <label>Color
+            <select class="opt-color">
+              <option>Silver</option><option>Black</option><option>Rose</option>
+            </select>
+          </label>
+          <label>Qty
+            <input class="opt-qty" type="number" min="1" value="1" />
+          </label>
+        </div>
+        <div class="product-actions">
+          <button class="quick-view">Quick View</button>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </article>
+
+      <article class="product-card" data-id="h-p3" data-price="599">
+        <img src="images/keychain3.jpg" alt="Leather Name Keychain">
+        <h3 class="product-name">Leather Name</h3>
+        <div class="price">₱599</div>
+        <div class="options">
+          <label>Color
+            <select class="opt-color">
+              <option>Tan</option><option>Brown</option><option>Black</option>
+            </select>
+          </label>
+          <label>Qty
+            <input class="opt-qty" type="number" min="1" value="1" />
+          </label>
+        </div>
+        <div class="product-actions">
+          <button class="quick-view">Quick View</button>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </article>
+    </div>
+    <div class="view-all-wrap"><a href="products.html" class="view-all">View All Products →</a></div>
+  </section>
+
+  <!-- CART MODAL -->
+  <div id="cartModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" aria-label="Close cart">&times;</button>
+      <h3>Your Cart</h3>
+      <div id="cartItemsWrap" class="cart-items-wrap"></div>
+      <div class="cart-footer">
+        <div class="cart-total">Total: <span id="cartTotal">₱0</span></div>
+        <div class="cart-actions">
+          <button id="clearCart" class="danger">Clear Cart</button>
+          <button id="checkout" class="primary">Checkout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK VIEW -->
+  <div id="quickViewModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" aria-label="Close quick view">&times;</button>
+      <div id="qvInner"></div>
+    </div>
+  </div>
+
+  <button id="stickyShopBtn">🛍️ Shop</button>
+  <script src="cart.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      /* ✅ Nav toggle */
+      const navToggle = document.getElementById('navToggle');
+      const navLinks = document.getElementById('navLinks');
+      navToggle.addEventListener('click', () => {
+        const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+        navLinks.classList.toggle('show');
+        navToggle.setAttribute('aria-expanded', String(!expanded));
+      });
+
+      /* ✅ Hero carousel logic */
+      const gallery = document.getElementById('heroGallery');
+      const imgs = gallery.querySelectorAll('img');
+      const prev = document.querySelector('.prev-hero');
+      const next = document.querySelector('.next-hero');
+      const dotsWrap = document.getElementById('heroDots');
+      let index = 0;
+      imgs.forEach((_, i) => {
+        const dot = document.createElement('span');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dot.dataset.index = i;
+        dotsWrap.appendChild(dot);
+        dot.addEventListener('click', () => showSlide(i));
+      });
+      const dots = dotsWrap.querySelectorAll('.dot');
+      function showSlide(i) {
+        imgs[index].classList.remove('active');
+        dots[index].classList.remove('active');
+        index = (i + imgs.length) % imgs.length;
+        imgs[index].classList.add('active');
+        dots[index].classList.add('active');
+      }
+      prev.addEventListener('click', () => showSlide(index - 1));
+      next.addEventListener('click', () => showSlide(index + 1));
+      setInterval(() => showSlide(index + 1), 5000);
+
+      /* ✅ Sticky shop */
+      const sticky = document.getElementById('stickyShopBtn');
+      window.addEventListener('scroll', () => sticky.style.display = window.scrollY > 400 ? 'block' : 'none');
+      sticky.addEventListener('click', () => location.href = 'products.html');
+
+      /* ✅ Add to cart + quick view */
+      document.querySelectorAll('#homeProductGrid .product-card').forEach(card => {
+        const addBtn = card.querySelector('.add-to-cart');
+        const qvBtn = card.querySelector('.quick-view');
+        addBtn.addEventListener('click', () => {
+          const id = card.dataset.id;
+          const name = card.querySelector('.product-name').textContent.trim();
+          const price = Number(card.dataset.price);
+          const color = card.querySelector('.opt-color')?.value || '';
+          const qty = Number(card.querySelector('.opt-qty')?.value) || 1;
+          const img = card.querySelector('img')?.src || '';
+          if (window.cartAPI?.addItem) window.cartAPI.addItem({ id, name, price, color, qty, img });
+          else alert('Cart system not loaded.');
+        });
+
+        qvBtn.addEventListener('click', () => {
+          const id = card.dataset.id;
+          const name = card.querySelector('.product-name').textContent.trim();
+          const price = Number(card.dataset.price);
+          const img = card.querySelector('img')?.src || '';
+          const colors = Array.from(card.querySelectorAll('.opt-color option')).map(o=>o.text);
+          const qvInner = document.getElementById('qvInner');
+          qvInner.innerHTML = `
+            <div class="qv-grid">
+              <img src="${img}" alt="${name}" />
+              <div class="qv-info">
+                <h3>${name}</h3>
+                <div class="price">₱${price}</div>
+                <label>Color<select id="qv-color">${colors.map(c=>`<option>${c}</option>`).join('')}</select></label>
+                <label>Qty<input id="qv-qty" type="number" min="1" value="1"/></label>
+                <div style="margin-top:12px;">
+                  <button id="qv-add" class="primary">Add to Cart</button>
+                  <button id="qv-close" class="secondary">Close</button>
+                </div>
+              </div>
+            </div>`;
+          const modal = document.getElementById('quickViewModal');
+          modal.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+          modal.querySelector('.modal-close').onclick = closeModal;
+          document.getElementById('qv-close').onclick = closeModal;
+          function closeModal() {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+          }
+          document.getElementById('qv-add').onclick = () => {
+            const color = document.getElementById('qv-color').value;
+            const qty = Number(document.getElementById('qv-qty').value) || 1;
+            if (window.cartAPI?.addItem) window.cartAPI.addItem({ id, name, price, color, qty, img });
+            closeModal();
+          };
+        });
+      });
+
+      /* ✅ Newsletter toast */
+      document.getElementById('newsletterForm')?.addEventListener('submit', e => {
+        e.preventDefault();
+        const email = document.getElementById('newsletterEmail').value.trim();
+        if (!email) return window.cartAPI?.showToast('Please enter a valid email.');
+        window.cartAPI?.showToast('Thanks for subscribing!');
+      });
+
+      /* ✅ Cart actions */
+      document.getElementById('clearCart')?.addEventListener('click', ()=>{
+        if (confirm('Clear all items?')) window.cartAPI?.clearCart?.();
+      });
+      document.getElementById('checkout')?.addEventListener('click', ()=>location.href='checkout.html');
+    });
+  </script>
+</body>
+</html>

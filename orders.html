@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keynected | Orders</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(180deg, #fff6fa 0%, #ffe6f0 100%);
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      text-align: center;
+      padding: 20px;
+    }
+
+    header img {
+      width: 180px;
+    }
+
+    .orders-container {
+      max-width: 900px;
+      margin: 60px auto;
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #5e356c;
+      margin-bottom: 25px;
+    }
+
+    .order-card {
+      background: #fff3f9;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .order-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .order-header h3 {
+      color: #6b4ea2;
+      margin: 0;
+    }
+
+    .order-header span {
+      color: #4a3b59;
+      font-size: 0.9rem;
+    }
+
+    .order-details {
+      margin-top: 10px;
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      display: none;
+    }
+
+    .order-details ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .order-details li {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed #e2c4f2;
+      font-size: 0.9rem;
+    }
+
+    .order-details li:last-child {
+      border-bottom: none;
+      font-weight: bold;
+      color: #6b4ea2;
+    }
+
+    .toggle-btn {
+      background: linear-gradient(135deg, #ff7ecb, #eaa7ff);
+      border: none;
+      color: white;
+      border-radius: 25px;
+      padding: 6px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-btn:hover {
+      background: linear-gradient(135deg, #e56bb4, #c77aff);
+      transform: scale(1.05);
+    }
+
+    #notif {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #c77aff;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 30px;
+      font-weight: 500;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 9999;
+    }
+
+    #notif.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .empty {
+      text-align: center;
+      color: #666;
+      font-size: 1.1rem;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a href="index.html"><img src="images/Keynected.png" alt="Keynected Logo"></a>
+  </header>
+
+  <div id="notif"></div>
+
+  <div class="orders-container fade-in">
+    <h1>Your Orders</h1>
+    <div id="ordersList">
+      <p class="empty">Loading your orders...</p>
+    </div>
+  </div>
+
+  <script>
+    const ordersList = document.getElementById("ordersList");
+    const notif = document.getElementById("notif");
+
+    // Show toast at top
+    function showNotif(msg) {
+      notif.textContent = msg;
+      notif.classList.add("show");
+      setTimeout(() => notif.classList.remove("show"), 2500);
+    }
+
+    // Load orders
+    const orders = JSON.parse(localStorage.getItem("keynected_orders_v1") || "[]");
+
+    if (!orders.length) {
+      ordersList.innerHTML = '<p class="empty">No orders found.</p>';
+    } else {
+      ordersList.innerHTML = orders.map((order, i) => `
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <h3>Order #${i + 1}</h3>
+              <span>${order.date}</span><br>
+              <span><strong>${order.name}</strong> — ${order.payment.toUpperCase()}</span>
+            </div>
+            <button class="toggle-btn" onclick="toggleDetails(${i})">View Items</button>
+          </div>
+          <div class="order-details" id="details-${i}">
+            <ul>
+              ${order.items.map(it => `
+                <li>
+                  <span>${it.name} (${it.color}) × ${it.qty}</span>
+                  <span>₱${it.price * it.qty}</span>
+                </li>
+              `).join("")}
+              <li><span>Total</span><span>₱${order.total}</span></li>
+            </ul>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // Toggle visibility of order details
+    function toggleDetails(i) {
+      const section = document.getElementById(`details-${i}`);
+      section.style.display = section.style.display === "block" ? "none" : "block";
+    }
+
+    // Simulate confirmation when user first lands
+    if (orders.length) showNotif("Loaded your order history!");
+  </script>
+</body>
+</html>

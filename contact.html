@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keynected | Contact</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Logo Header -->
+  <header class="logo-header">
+    <img src="images/Keynected.png" alt="Keynected logo">
+  </header>
+
+  <!-- Main Navigation Header -->
+  <header class="main-header">
+      <div class="navbar">
+  <div class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('show')">☰</div>
+  <nav class="nav-links">
+    <a href="index.html">HOME</a>
+    <a href="products.html">PRODUCTS</a>
+    <a href="review.html">REVIEWS</a>
+    <a href="about.html" >ABOUT</a>
+    <a href="contact.html"class="active">CONTACT</a>
+  </nav>
+
+  <div class="nav-right">
+    <button id="topCartBtn" class="icon-btn" aria-label="Open cart">
+      🛒 <span class="cart-badge" id="topCartCount">0</span>
+    </button>
+    <a href="login.html" class="login-btn">Login / Signup</a>
+  </div>
+</div>
+
+    </div>
+  </header>
+
+    </nav>
+  </header>
+
+  <!-- Contact Section -->
+  <section class="contact fade-in">
+    <h1>Contact Us</h1>
+    <p>We’d love to hear from you! Send us a message or reach out using the info below.</p>
+
+    <div class="contact-info">
+      <div class="info-box">
+        <p>✉️ Keynected@gmail.com</p>
+      </div>
+      <div class="info-box">
+        <p>📞 +63 960 024 6487</p>
+      </div>
+      <div class="info-box">
+        <p>📍 Philippines</p>
+      </div>
+    </div>
+
+    <form action="#" method="post" class="contact-form">
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Your Email" required>
+      <textarea placeholder="Your Message" rows="5" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+  <!-- 🌸 Shared Cart Modal -->
+  <div id="cartModal" class="modal" aria-hidden="true" role="dialog">
+    <div class="modal-content">
+      <button class="modal-close" aria-label="Close cart">&times;</button>
+      <h3>Your Cart</h3>
+      <div id="cartItemsWrap"></div>
+      <div class="cart-footer">
+        <div class="cart-total">Total: <span id="cartTotal">₱0</span></div>
+        <div class="cart-actions">
+          <button id="clearCart" class="danger">Clear Cart</button>
+          <button id="checkout" class="primary">Checkout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>© 2025 Keynected. Made with Love.</p>
+  </footer>
+<script src="cart.js" defer></script>
+  <script>
+    // Responsive nav toggle
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    navToggle.addEventListener('click', () => {
+      const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+      navLinks.classList.toggle('show');
+      navToggle.setAttribute('aria-expanded', String(!expanded));
+    });
+  </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Navigation Toggle
+      const navToggle = document.getElementById('navToggle');
+      const navLinks = document.getElementById('navLinks');
+      navToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('show');
+      });
+
+      // Fade-in Animation on Scroll
+      const fadeEls = document.querySelectorAll('.fade-in');
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      });
+      fadeEls.forEach(el => observer.observe(el));
+
+      // Cart Buttons
+      document.getElementById('clearCart').addEventListener('click', () => {
+        if (confirm('Clear your cart?')) window.cartAPI.clearCart();
+      });
+      document.getElementById('checkout').addEventListener('click', () => {
+        window.location.href = 'checkout.html';
+      });
+    });
+  </script>
+  
+</body>
+</html>

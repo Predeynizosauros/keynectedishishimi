@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keynected | Your Pair</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #fff0f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header, footer {
+      text-align: center;
+      padding: 12px 0;
+      background-color: #ffe6f0;
+    }
+    main {
+      flex: 1;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #ff4fa2;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .message-container {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .message {
+      border-bottom: 1px solid #f0f0f0;
+      padding: 10px 0;
+    }
+    .message:last-child {
+      border-bottom: none;
+    }
+    .message p {
+      margin: 0 0 4px 0;
+    }
+    .message .sender {
+      font-weight: 600;
+      color: #ff4fa2;
+    }
+    .input-area {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .input-area input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .input-area button {
+      background-color: #ff4fa2;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .input-area button:hover {
+      background-color: #e03e92;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="images/Keynected.png" alt="Keynected Logo" style="height:50px;">
+    <h2>Your Shared Space</h2>
+  </header>
+
+  <main>
+    <p style="text-align:center;">This is a demo of your Keynected pair page. Messages sent here simulate a connection with your special someone.</p>
+
+    <div class="message-container" id="messageContainer">
+      <div class="message">
+        <p class="sender">Alex:</p>
+        <p>Hey! Just thinking about you 💞</p>
+      </div>
+      <div class="message">
+        <p class="sender">You:</p>
+        <p>Feeling connected even from afar! 🌍</p>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <input type="text" id="newMessage" placeholder="Write a message..." />
+      <button id="sendBtn">Send</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 Keynected. Made with Love.</p>
+  </footer>
+
+  <script>
+    const sendBtn = document.getElementById('sendBtn');
+    const newMessageInput = document.getElementById('newMessage');
+    const messageContainer = document.getElementById('messageContainer');
+
+    sendBtn.addEventListener('click', () => {
+      const text = newMessageInput.value.trim();
+      if (!text) return;
+      const msgDiv = document.createElement('div');
+      msgDiv.classList.add('message');
+      msgDiv.innerHTML = `<p class="sender">You:</p><p>${text}</p>`;
+      messageContainer.appendChild(msgDiv);
+      newMessageInput.value = '';
+      messageContainer.scrollTop = messageContainer.scrollHeight;
+    });
+
+    // Optional: Enter key sends message
+    newMessageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendBtn.click();
+    });
+  </script>
+</body>
+</html>

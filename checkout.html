@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keynected | Checkout</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(180deg, #fff6fa 0%, #ffe6f0 100%);
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      text-align: center;
+      padding: 20px;
+    }
+
+    header img {
+      width: 180px;
+    }
+
+    .checkout-container {
+      max-width: 700px;
+      background: white;
+      margin: 60px auto;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .checkout-container h1 {
+      text-align: center;
+      color: #5e356c;
+      margin-bottom: 25px;
+    }
+
+    .order-summary {
+      background: #fff3f9;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .order-summary h2 {
+      color: #6b4ea2;
+      margin-bottom: 10px;
+    }
+
+    .order-summary ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .order-summary li {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px dashed #e2c4f2;
+      font-size: 0.95rem;
+    }
+
+    .order-summary li:last-child {
+      border-bottom: none;
+      font-weight: bold;
+      color: #6b4ea2;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: 500;
+      color: #4a3b59;
+      text-align: left;
+    }
+
+    input, textarea, select {
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      transition: 0.2s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #d177ff;
+      box-shadow: 0 0 5px #e7b8ff;
+    }
+
+    textarea {
+      resize: none;
+      height: 90px;
+    }
+
+    button.submit-btn {
+      margin-top: 15px;
+      background: linear-gradient(135deg, #ff7ecb, #eaa7ff);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    button.submit-btn:hover {
+      background: linear-gradient(135deg, #e56bb4, #c77aff);
+      transform: scale(1.05);
+    }
+
+    /* Top notification */
+    #notif {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #c77aff;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 30px;
+      font-weight: 500;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 9999;
+    }
+
+    #notif.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html"><img src="images/Keynected.png" alt="Keynected Logo"></a>
+  </header>
+
+  <div id="notif">Your order has been placed successfully!</div>
+
+  <div class="checkout-container fade-in">
+    <h1>Checkout</h1>
+
+    <div class="order-summary" id="orderSummary">
+      <h2>Order Summary</h2>
+      <ul id="orderList">
+        <li>Loading your items...</li>
+      </ul>
+    </div>
+
+    <form id="checkoutForm">
+      <label>Full Name</label>
+      <input type="text" id="name" required>
+
+      <label>Email</label>
+      <input type="email" id="email" required>
+
+      <label>Phone Number</label>
+      <input type="tel" id="phone" required>
+
+      <label>Delivery Address</label>
+      <textarea id="address" required></textarea>
+
+      <label>Payment Method</label>
+      <select id="payment" required>
+        <option value="">Select payment</option>
+        <option value="gcash">GCash</option>
+        <option value="cod">Cash on Delivery</option>
+        <option value="card">Debit / Credit Card</option>
+      </select>
+
+      <button type="submit" class="submit-btn">Place Order</button>
+    </form>
+  </div>
+
+  <script>
+    // 🔸 Load order summary from localStorage
+    const cart = JSON.parse(localStorage.getItem('keynected_cart_v1') || '[]');
+    const list = document.getElementById('orderList');
+    const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+    if (cart.length) {
+      list.innerHTML = cart.map(item => `
+        <li>
+          <span>${item.name} (${item.color}) × ${item.qty}</span>
+          <span>₱${item.price * item.qty}</span>
+        </li>
+      `).join('') + `
+        <li><span>Total</span><span>₱${total}</span></li>
+      `;
+    } else {
+      list.innerHTML = '<li>Your cart is empty.</li>';
+    }
+
+    // 🔸 Notification function
+    function showNotif(message) {
+      const notif = document.getElementById('notif');
+      notif.textContent = message;
+      notif.classList.add('show');
+      setTimeout(() => notif.classList.remove('show'), 3000);
+    }
+
+    // 🔸 Form handling
+    document.getElementById('checkoutForm').addEventListener('submit', e => {
+      e.preventDefault();
+
+      if (!cart.length) {
+        showNotif('Your cart is empty.');
+        return;
+      }
+
+      const order = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value,
+        payment: document.getElementById('payment').value,
+        items: cart,
+        total,
+        date: new Date().toLocaleString()
+      };
+
+      console.log("Order submitted:", order);
+
+      localStorage.removeItem('keynected_cart_v1');
+      document.getElementById('checkoutForm').reset();
+      showNotif('Your order has been placed successfully!');
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 3500);
+    });
+  </script>
+</body>
+</html>
