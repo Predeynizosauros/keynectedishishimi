@@ -163,13 +163,17 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({
+  prompt: 'select_account'
+});
+
 
   // SIGN UP
   const signupForm = document.getElementById("signupForm");
   signupForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       alert("✅ Signup successful! Welcome, " + userCredential.user.email);
@@ -183,11 +187,13 @@
   const loginForm = document.getElementById("loginForm");
   loginForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       alert("✅ Logged in successfully as " + userCredential.user.email);
+      console.log(result.user);
+
       window.location.href = "index.html"; // redirect after login
     } catch (error) {
       alert("⚠️ " + error.message);
@@ -200,6 +206,8 @@
     try {
       const result = await signInWithPopup(auth, provider);
       alert("✅ Logged in with Google as " + result.user.email);
+      console.log(result.user);
+
       window.location.href = "index.html";
     } catch (error) {
       alert("⚠️ " + error.message);
