@@ -152,7 +152,7 @@
 
   <div class="checkout-container fade-in">
     <h1>Checkout</h1>
-
+<p id="userEmailDisplay" style="text-align:center; color:#6b4ea2; font-weight:500;"></p>
     <div class="order-summary" id="orderSummary">
       <h2>Order Summary</h2>
       <ul id="orderList">
@@ -184,6 +184,9 @@
       <button type="submit" class="submit-btn">Place Order</button>
     </form>
   </div>
+
+<script type="module" src="auth-check.js"></script>
+<script src="cart.js" defer></script>
 
   <script>
     // 🔸 Load order summary from localStorage
@@ -233,6 +236,8 @@
       };
 
       console.log("Order submitted:", order);
+const userDisplay = document.getElementById('userEmailDisplay');
+if (userDisplay) userDisplay.textContent = `Logged in as: ${user.email}`;
 
       localStorage.removeItem('keynected_cart_v1');
       document.getElementById('checkoutForm').reset();
