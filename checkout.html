@@ -247,6 +247,23 @@ if (userDisplay) userDisplay.textContent = `Logged in as: ${user.email}`;
         window.location.href = "index.html";
       }, 3500);
     });
+
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+const auth = getAuth();
+
+onAuthStateChanged(auth, (user) => {
+  const loginBtn = document.querySelector('.login-btn');
+  if (user) {
+    console.log("Logged in as:", user.email);
+    if (loginBtn) loginBtn.textContent = `Hi, ${user.email.split('@')[0]}`;
+  } else {
+    console.log("Not logged in");
+    if (loginBtn) loginBtn.textContent = "Login / Signup";
+  }
+});
+
+
   </script>
 </body>
 </html>

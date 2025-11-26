@@ -57,22 +57,24 @@
     <a href="review.html">REVIEWS</a>
     <a href="about.html" >ABOUT</a>
     <a href="contact.html">CONTACT</a>
-  </nav>
-
   <div class="nav-right">
     <button id="topCartBtn" class="icon-btn" aria-label="Open cart">
       🛒 <span class="cart-badge" id="topCartCount">0</span>
-    </button>
-    <div class="user-info">
-  <img id="userPhoto" alt="User photo" style="display:none; width:32px; height:32px; border-radius:50%; margin-right:8px;">
-  <span id="userName" style="margin-right:10px; font-weight:500;"></span>
-  <a href="login.html" class="login-btn">Login / Signup</a>
-</div>
+    </button> 
+   </nav>
+    <div id="userInfo" class="user-info">
+      <img id="userPhoto" 
+           src="" 
+           alt="User Photo"
+           style="display:none; width:32px; height:32px; border-radius:50%; object-fit:cover;">
+      <span id="userName"></span>
+      <a href="login.html" class="login-btn">Login / Signup</a>
+    </div>
+  </nav>
+</header>
 
   </div>
 </div>
-
-    </div>
   </header>
 
   <!-- HERO -->
@@ -202,118 +204,153 @@
   </div>
 
   <button id="stickyShopBtn">🛍️ Shop</button>
-  <script src="cart.js" defer></script>
-  <script type="module" src="firebase-auth.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      /* ✅ Nav toggle */
-      const navToggle = document.getElementById('navToggle');
-      const navLinks = document.getElementById('navLinks');
-      navToggle.addEventListener('click', () => {
-        const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-        navLinks.classList.toggle('show');
-        navToggle.setAttribute('aria-expanded', String(!expanded));
-      });
 
-      /* ✅ Hero carousel logic */
-      const gallery = document.getElementById('heroGallery');
-      const imgs = gallery.querySelectorAll('img');
-      const prev = document.querySelector('.prev-hero');
-      const next = document.querySelector('.next-hero');
-      const dotsWrap = document.getElementById('heroDots');
-      let index = 0;
-      imgs.forEach((_, i) => {
-        const dot = document.createElement('span');
-        dot.className = 'dot' + (i === 0 ? ' active' : '');
-        dot.dataset.index = i;
-        dotsWrap.appendChild(dot);
-        dot.addEventListener('click', () => showSlide(i));
-      });
-      const dots = dotsWrap.querySelectorAll('.dot');
-      function showSlide(i) {
-        imgs[index].classList.remove('active');
-        dots[index].classList.remove('active');
-        index = (i + imgs.length) % imgs.length;
-        imgs[index].classList.add('active');
-        dots[index].classList.add('active');
-      }
-      prev.addEventListener('click', () => showSlide(index - 1));
-      next.addEventListener('click', () => showSlide(index + 1));
-      setInterval(() => showSlide(index + 1), 5000);
-
-      /* ✅ Sticky shop */
-      const sticky = document.getElementById('stickyShopBtn');
-      window.addEventListener('scroll', () => sticky.style.display = window.scrollY > 400 ? 'block' : 'none');
-      sticky.addEventListener('click', () => location.href = 'products.html');
-
-      /* ✅ Add to cart + quick view */
-      document.querySelectorAll('#homeProductGrid .product-card').forEach(card => {
-        const addBtn = card.querySelector('.add-to-cart');
-        const qvBtn = card.querySelector('.quick-view');
-        addBtn.addEventListener('click', () => {
-          const id = card.dataset.id;
-          const name = card.querySelector('.product-name').textContent.trim();
-          const price = Number(card.dataset.price);
-          const color = card.querySelector('.opt-color')?.value || '';
-          const qty = Number(card.querySelector('.opt-qty')?.value) || 1;
-          const img = card.querySelector('img')?.src || '';
-          if (window.cartAPI?.addItem) window.cartAPI.addItem({ id, name, price, color, qty, img });
-          else alert('Cart system not loaded.');
-        });
-
-        qvBtn.addEventListener('click', () => {
-          const id = card.dataset.id;
-          const name = card.querySelector('.product-name').textContent.trim();
-          const price = Number(card.dataset.price);
-          const img = card.querySelector('img')?.src || '';
-          const colors = Array.from(card.querySelectorAll('.opt-color option')).map(o=>o.text);
-          const qvInner = document.getElementById('qvInner');
-          qvInner.innerHTML = `
-            <div class="qv-grid">
-              <img src="${img}" alt="${name}" />
-              <div class="qv-info">
-                <h3>${name}</h3>
-                <div class="price">₱${price}</div>
-                <label>Color<select id="qv-color">${colors.map(c=>`<option>${c}</option>`).join('')}</select></label>
-                <label>Qty<input id="qv-qty" type="number" min="1" value="1"/></label>
-                <div style="margin-top:12px;">
-                  <button id="qv-add" class="primary">Add to Cart</button>
-                  <button id="qv-close" class="secondary">Close</button>
-                </div>
-              </div>
-            </div>`;
-          const modal = document.getElementById('quickViewModal');
-          modal.style.display = 'flex';
-          document.body.style.overflow = 'hidden';
-          modal.querySelector('.modal-close').onclick = closeModal;
-          document.getElementById('qv-close').onclick = closeModal;
-          function closeModal() {
-            modal.style.display = 'none';
-            document.body.style.overflow = '';
-          }
-          document.getElementById('qv-add').onclick = () => {
-            const color = document.getElementById('qv-color').value;
-            const qty = Number(document.getElementById('qv-qty').value) || 1;
-            if (window.cartAPI?.addItem) window.cartAPI.addItem({ id, name, price, color, qty, img });
-            closeModal();
-          };
-        });
-      });
-
-      /* ✅ Newsletter toast */
-      document.getElementById('newsletterForm')?.addEventListener('submit', e => {
-        e.preventDefault();
-        const email = document.getElementById('newsletterEmail').value.trim();
-        if (!email) return window.cartAPI?.showToast('Please enter a valid email.');
-        window.cartAPI?.showToast('Thanks for subscribing!');
-      });
-
-      /* ✅ Cart actions */
-      document.getElementById('clearCart')?.addEventListener('click', ()=>{
-        if (confirm('Clear all items?')) window.cartAPI?.clearCart?.();
-      });
-      document.getElementById('checkout')?.addEventListener('click', ()=>location.href='checkout.html');
+  
+<!-- your page JS (UI logic) -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  /* NAV TOGGLE */
+  const navToggle = document.querySelector('.nav-toggle');
+  const navLinks = document.querySelector('.nav-links');
+  if (navToggle) {
+    navToggle.addEventListener('click', () => {
+      const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+      navLinks.classList.toggle('show');
+      navToggle.setAttribute('aria-expanded', String(!expanded));
     });
-  </script>
+  }
+
+  /* HERO CAROUSEL */
+  const gallery = document.getElementById('heroGallery');
+  if (gallery) {
+    const imgs = gallery.querySelectorAll('img');
+    const prev = document.querySelector('.prev-hero');
+    const next = document.querySelector('.next-hero');
+    const dotsWrap = document.getElementById('heroDots');
+    let index = 0;
+
+    imgs.forEach((_, i) => {
+      const dot = document.createElement('span');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.dataset.index = i;
+      dotsWrap.appendChild(dot);
+      dot.addEventListener('click', () => showSlide(i));
+    });
+
+    const dots = dotsWrap.querySelectorAll('.dot');
+
+    function showSlide(i) {
+      imgs[index].classList.remove('active');
+      dots[index].classList.remove('active');
+      index = (i + imgs.length) % imgs.length;
+      imgs[index].classList.add('active');
+      dots[index].classList.add('active');
+    }
+
+    prev.addEventListener('click', () => showSlide(index - 1));
+    next.addEventListener('click', () => showSlide(index + 1));
+    setInterval(() => showSlide(index + 1), 5000);
+  }
+
+  /* STICKY SHOP BTN */
+  const sticky = document.getElementById('stickyShopBtn');
+  if (sticky) {
+    window.addEventListener('scroll', () => {
+      sticky.style.display = window.scrollY > 400 ? 'block' : 'none';
+    });
+    sticky.addEventListener('click', () => location.href = 'products.html');
+  }
+
+  /* PRODUCT CARDS (quick view + add to cart) */
+  document.querySelectorAll('#homeProductGrid .product-card').forEach(card => {
+    const addBtn = card.querySelector('.add-to-cart');
+    const qvBtn = card.querySelector('.quick-view');
+
+    addBtn?.addEventListener('click', () => {
+      const id = card.dataset.id;
+      const name = card.querySelector('.product-name').textContent.trim();
+      const price = Number(card.dataset.price);
+      const color = card.querySelector('.opt-color')?.value || '';
+      const qty = Number(card.querySelector('.opt-qty')?.value) || 1;
+      const img = card.querySelector('img')?.src || '';
+
+      window.cartAPI?.addItem?.({ id, name, price, color, qty, img });
+    });
+
+    qvBtn?.addEventListener('click', () => {
+      const id = card.dataset.id;
+      const name = card.querySelector('.product-name').textContent.trim();
+      const price = Number(card.dataset.price);
+      const img = card.querySelector('img')?.src || '';
+      const colors = [...card.querySelectorAll('.opt-color option')].map(o => o.text);
+
+      const qvInner = document.getElementById('qvInner');
+      qvInner.innerHTML = `
+        <div class="qv-grid">
+          <img src="${img}" alt="${name}" />
+          <div class="qv-info">
+            <h3>${name}</h3>
+            <div class="price">₱${price}</div>
+            <label>Color<select id="qv-color">${colors.map(c=>`<option>${c}</option>`).join('')}</select></label>
+            <label>Qty<input id="qv-qty" type="number" min="1" value="1"></label>
+            <div style="margin-top:12px;">
+              <button id="qv-add" class="primary">Add to Cart</button>
+              <button id="qv-close" class="secondary">Close</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const modal = document.getElementById('quickViewModal');
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+
+      const closeModal = () => {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+      };
+
+      document.querySelector('.modal-close').onclick = closeModal;
+      document.getElementById('qv-close').onclick = closeModal;
+
+      document.getElementById('qv-add').onclick = () => {
+        const color = document.getElementById('qv-color').value;
+        const qty = Number(document.getElementById('qv-qty').value);
+        window.cartAPI?.addItem?.({ id, name, price, color, qty, img });
+        closeModal();
+      };
+    });
+  });
+
+  /* NEWSLETTER TOAST */
+  const newsletterForm = document.getElementById('newsletterForm');
+  newsletterForm?.addEventListener('submit', e => {
+    e.preventDefault();
+    const email = document.getElementById('newsletterEmail').value.trim();
+    if (!email) return window.cartAPI?.showToast?.('Please enter a valid email.');
+    window.cartAPI?.showToast?.('Thanks for subscribing!');
+  });
+
+  /* CART BUTTONS */
+  document.getElementById('clearCart')?.addEventListener('click', () => {
+    if (confirm('Clear all items?')) window.cartAPI?.clearCart?.();
+  });
+
+  document.getElementById('checkout')?.addEventListener('click', () => {
+    location.href = 'checkout.html';
+  });
+});
+</script>
+
+<!-- CART SYSTEM MUST LOAD BEFORE AUTH CHECKS -->
+<script type="module" src="cart.js"></script>
+
+<!-- GOOGLE GSI -->
+<script src="https://accounts.google.com/gsi/client" async></script>
+
+<!-- 🔥 MUST BE LAST so DOM is ready for navbar update -->
+<script type="module" src="firebase-auth.js"></script>
+
 </body>
 </html>
+

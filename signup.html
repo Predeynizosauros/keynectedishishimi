@@ -81,15 +81,7 @@
       background-color: #ff4fa1;
     }
 
-    .google-btn {
-      background-color: #4285f4;
-      margin-top: 12px;
-    }
-    .google-btn:hover {
-      background-color: #3367d6;
-    }
-
-    .signup-container .login-link {
+    .login-link {
       display: block;
       margin-top: 16px;
       color: #ff7ecb;
@@ -97,7 +89,7 @@
       font-weight: 500;
     }
 
-    .signup-container .login-link:hover {
+    .login-link:hover {
       text-decoration: underline;
     }
 
@@ -114,105 +106,112 @@
     }
   </style>
 </head>
+
 <body>
 
-  <header class="logo-header">
-    <img src="images/Keynected.png" alt="Keynected logo">
-  </header>
+<header class="logo-header">
+  <img src="images/Keynected.png" alt="Keynected logo">
+</header>
 
-  <main>
-    <div class="signup-container">
-      <h1>Sign Up</h1>
-      <form id="signupForm">
-        <input type="text" id="name" placeholder="Full Name" required />
-        <input type="email" id="signupEmail" placeholder="Email" required />
-        <input type="password" id="signupPassword" placeholder="Password" required />
-        <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
-        <button type="submit">Create Account</button>
-        <button id="googleLogin" type="button" style="margin-top: 10px; background: #fff; color: #555; border: 1px solid #ddd;">
-  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
-       alt="Google Logo" style="width:20px; vertical-align:middle; margin-right:8px;">
-  Continue with Google
-</button>
+<main>
+  <div class="signup-container">
+    <h1>Create Account</h1>
 
-      </form>
+    <form id="signupForm">
+      <input type="text" id="name" placeholder="Full Name" required />
+      <input type="email" id="signupEmail" placeholder="Email" required />
+      <input type="password" id="signupPassword" placeholder="Password" required />
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
 
-      <a href="login.html" class="login-link">Already have an account? Login</a>
-      <a href="index.html" class="back-home">← Back to Home</a>
-    </div>
-  </main>
-  
+      <button type="submit">Create Account</button>
+
+      <button id="googleSignupBtn" type="button" style="
+        margin-top: 10px; 
+        background: #fff; 
+        color: #555; 
+        border: 1px solid #ddd;">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+             alt="Google Logo" style="width:20px; vertical-align:middle; margin-right:8px;">
+        Continue with Google
+      </button>
+    </form>
+
+    <a href="login.html" class="login-link">Already have an account? Login</a>
+    <a href="index.html" class="back-home">← Back to Home</a>
+  </div>
+</main>
 
 <script type="module">
-  // Import Firebase SDKs
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  updateProfile,
+  setPersistence,
+  browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-  // Your Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyC-ExpJfS0Gc-WEy7_6_pIz2g_WsyVsQDA",
-    authDomain: "keynected-store.firebaseapp.com",
-    projectId: "keynected-store",
-    storageBucket: "keynected-store.firebasestorage.app",
-    messagingSenderId: "1008100804573",
-    appId: "1:1008100804573:web:c2e87fa8f8f28fadedd834",
-    measurementId: "G-R17C0EMD2D"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyC-ExpJfS0Gc-WEy7_6_pIz2g_WsyVsQDA",
+  authDomain: "keynected-store.firebaseapp.com",
+  projectId: "keynected-store",
+  storageBucket: "keynected-store.firebasestorage.app",
+  messagingSenderId: "1008100804573",
+  appId: "1:1008100804573:web:c2e87fa8f8f28fadedd834",
+  measurementId: "G-R17C0EMD2D"
+};
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({
-  prompt: 'select_account'
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// 🔥 KEEP USERS LOGGED IN AFTER REDIRECT
+setPersistence(auth, browserLocalPersistence);
+
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: "select_account" });
+
+document.getElementById("signupForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value;
+  const confirm = document.getElementById("confirmPassword").value;
+
+  if (password !== confirm) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+    // 🔥 ADD USERNAME
+    await updateProfile(userCredential.user, {
+      displayName: name
+    });
+
+    // 🔥 GIVE FIREBASE TIME TO SAVE SESSION
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 200);
+
+  } catch (error) {
+    alert(error.message);
+  }
 });
 
-
-  // SIGN UP
-  const signupForm = document.getElementById("signupForm");
-  signupForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("signupEmail").value;
-    const password = document.getElementById("signupPassword").value;
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      alert("✅ Signup successful! Welcome, " + userCredential.user.email);
-      window.location.href = "login.html";
-    } catch (error) {
-      alert("⚠️ " + error.message);
-    }
-  });
-
-  // LOGIN
-  const loginForm = document.getElementById("loginForm");
-  loginForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("signupEmail").value;
-    const password = document.getElementById("signupPassword").value;
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      alert("✅ Logged in successfully as " + userCredential.user.email);
-      console.log(result.user);
-
-      window.location.href = "index.html"; // redirect after login
-    } catch (error) {
-      alert("⚠️ " + error.message);
-    }
-  });
-
-  // GOOGLE LOGIN
-  const googleBtn = document.getElementById("googleLogin");
-  googleBtn?.addEventListener("click", async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      alert("✅ Logged in with Google as " + result.user.email);
-      console.log(result.user);
-
-      window.location.href = "index.html";
-    } catch (error) {
-      alert("⚠️ " + error.message);
-    }
-  });
+// GOOGLE SIGNUP
+document.getElementById("googleSignupBtn").addEventListener("click", async () => {
+  try {
+    await signInWithPopup(auth, provider);
+    window.location.href = "index.html";
+  } catch (error) {
+    alert(error.message);
+  }
+});
 </script>
 
 

@@ -1,129 +1,138 @@
-// cart.js — Shared cart logic for Keynected
-(() => {
-  const CART_KEY = 'keynected_cart_v1';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-  const loadCart = () => JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-  const saveCart = (cart) => localStorage.setItem(CART_KEY, JSON.stringify(cart));
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-  // Toast notification (top right)
-  const showToast = (msg) => {
-    let toast = document.createElement('div');
-    toast.className = 'toast-msg';
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.classList.add('show'), 50);
-    setTimeout(() => {
-      toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 300);
-    }, 2500);
-  };
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT_ID"
+};
 
-  const updateCartCount = () => {
-    const cart = loadCart();
-    const count = cart.reduce((sum, i) => sum + i.qty, 0);
-    const badge = document.getElementById('topCartCount');
-    if (badge) badge.textContent = count;
-  };
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-  const renderCartModal = () => {
-    const wrap = document.getElementById('cartItemsWrap');
-    const totalEl = document.getElementById('cartTotal');
-    const cart = loadCart();
+let userId = null;
 
-    if (!wrap) return;
+// Toast Utility
+export function showToast(msg) {
+  const t = document.createElement("div");
+  t.className = "toast-msg";
+  t.textContent = msg;
+  document.body.appendChild(t);
 
-    if (cart.length === 0) {
-      wrap.innerHTML = '<p class="empty-cart">Your cart is empty 🛒</p>';
-      if (totalEl) totalEl.textContent = '₱0';
-      return;
-    }
+  setTimeout(() => t.classList.add("show"), 10);
+  setTimeout(() => {
+    t.classList.remove("show");
+    setTimeout(() => t.remove(), 300);
+  }, 2500);
+}
 
-    let total = 0;
-    wrap.innerHTML = cart
-      .map((item, index) => {
-        const itemTotal = item.price * item.qty;
-        total += itemTotal;
-        return `
-        <div class="cart-item">
-          <img src="${item.img}" alt="${item.name}" />
-          <div class="cart-item-info">
-            <h4>${item.name}</h4>
-            <p>${item.color}</p>
-            <p>₱${item.price} x ${item.qty}</p>
-          </div>
-          <button class="remove-item" data-index="${index}">×</button>
-        </div>`;
-      })
-      .join('');
+// Listen for Login
+onAuthStateChanged(auth, (user) => {
+  userId = user ? user.uid : null;
+});
 
-    if (totalEl) totalEl.textContent = '₱' + total.toLocaleString();
+// ---------------------------------------------
+// CART FUNCTIONS
+// ---------------------------------------------
 
-    // Wire up remove buttons
-    wrap.querySelectorAll('.remove-item').forEach((btn) =>
-      btn.addEventListener('click', () => {
-        const index = +btn.dataset.index;
-        const cart = loadCart();
-        cart.splice(index, 1);
-        saveCart(cart);
-        renderCartModal();
-        updateCartCount();
-        showToast('Item removed');
-      })
-    );
-  };
+export async function addItem({ id, name, price, color, qty, img }) {
+  if (!userId) return showToast("⚠️ Please log in first.");
 
-  const openCart = () => {
-    const modal = document.getElementById('cartModal');
-    if (!modal) return;
-    renderCartModal();
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  };
+  const ref = collection(db, "users", userId, "cart");
+  const q = query(ref, where("id", "==", id), where("color", "==", color));
+  const snap = await getDocs(q);
 
-  const closeCart = () => {
-    const modal = document.getElementById('cartModal');
-    if (!modal) return;
-    modal.style.display = 'none';
-    document.body.style.overflow = '';
-  };
+  if (!snap.empty) {
+    const docRef = snap.docs[0].ref;
+    const newQty = snap.docs[0].data().qty + qty;
+    await updateDoc(docRef, { qty: newQty });
+  } else {
+    await addDoc(ref, { id, name, price, color, qty, img });
+  }
 
-  // Public API
-  window.cartAPI = {
-    addItem({ id, name, price, color, qty, img }) {
-      const cart = loadCart();
-      const existing = cart.find((i) => i.id === id && i.color === color);
-      if (existing) {
-        existing.qty += qty;
-      } else {
-        cart.push({ id, name, price, color, qty, img });
-      }
-      saveCart(cart);
-      updateCartCount();
-      showToast(`${name} added to cart!`);
-    },
-    clearCart() {
-      localStorage.removeItem(CART_KEY);
-      updateCartCount();
-      renderCartModal();
-      showToast('Cart cleared.');
-    },
-    showToast,
-  };
+  showToast("Added to cart!");
+  loadCart();
+}
 
-  // Setup listeners once DOM is ready
-  document.addEventListener('DOMContentLoaded', () => {
-    updateCartCount();
+export async function removeItem(docId) {
+  if (!userId) return;
+  await deleteDoc(doc(db, "users", userId, "cart", docId));
+  showToast("Item removed");
+  loadCart();
+}
 
-    const topCartBtn = document.getElementById('topCartBtn');
-    const cartModal = document.getElementById('cartModal');
-    const modalClose = cartModal?.querySelector('.modal-close');
+export async function clearCart() {
+  if (!userId) return;
+  const ref = collection(db, "users", userId, "cart");
+  const snap = await getDocs(ref);
+  snap.forEach(d => deleteDoc(d.ref));
+  loadCart();
+}
 
-    if (topCartBtn) topCartBtn.addEventListener('click', openCart);
-    if (modalClose) modalClose.addEventListener('click', closeCart);
+// LOAD CART
+export async function loadCart() {
+  if (!userId) return;
 
-    // Close on outside click
-    cartModal?.addEventListener('click', (e) => {
-      if (e.target === cartModal) closeCart();
-    });
+  const wrap = document.getElementById("cartItemsWrap");
+  const totalLabel = document.getElementById("cartTotal");
+  const ref = collection(db, "users", userId, "cart");
+  const snap = await getDocs(ref);
+
+  wrap.innerHTML = "";
+
+  let total = 0;
+  snap.forEach(d => {
+    const item = d.data();
+    total += item.qty * item.price;
+
+    wrap.innerHTML += `
+      <div class="cart-item">
+        <img src="${item.img}">
+        <div>
+          <strong>${item.name}</strong><br>
+          ${item.color} — ₱${item.price} × ${item.qty}
+        </div>
+        <button onclick="cartAPI.removeItem('${d.id}')" class="danger small">Remove</button>
+      </div>
+    `;
   });
-})();
+
+  totalLabel.textContent = "₱" + total;
+
+  // Update Cart Badge
+  document.getElementById("topCartCount").textContent = snap.size;
+}
+
+window.cartAPI = {
+  addItem,
+  removeItem,
+  clearCart,
+  loadCart,
+  showToast
+};
+
+// Modal Toggle
+document.getElementById("topCartBtn").onclick = () => {
+  document.getElementById("cartModal").style.display = "flex";
+  loadCart();
+};
+
+document.querySelectorAll(".modal-close").forEach(btn => {
+  btn.onclick = () => {
+    btn.closest(".modal").style.display = "none";
+  };
+});
